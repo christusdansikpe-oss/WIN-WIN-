@@ -1,0 +1,242 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>Win-win · Pronostics foot</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Barlow+Condensed:wght@600;800&family=Figtree:wght@400;600&display=swap" rel="stylesheet">
+<style>
+:root{--bg:#EEF4F0;--card:#FFFFFF;--ink:#12261C;--mute:#5B6E63;--line:#D3DFD7;--pitch:#14532D;--pitch2:#1B6B3A;--gold:#F2B705;--win:#1B8A4B;--lose:#C23B3B;--onpitch:#F2F8F3;
+box-sizing:border-box;padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px);color-scheme:light}
+@media (prefers-color-scheme:dark){:root:not([data-theme="light"]){--bg:#0C1812;--card:#14251B;--ink:#E7F0EA;--mute:#9DB0A4;--line:#25392D;--pitch:#0F3B20;--pitch2:#14502B;--win:#4CC27F;--lose:#E26B6B;color-scheme:dark}}
+:root[data-theme="dark"]{--bg:#0C1812;--card:#14251B;--ink:#E7F0EA;--mute:#9DB0A4;--line:#25392D;--pitch:#0F3B20;--pitch2:#14502B;--win:#4CC27F;--lose:#E26B6B;color-scheme:dark}
+html{scroll-padding-top:env(safe-area-inset-top,0px)}
+*{box-sizing:border-box}
+body{margin:0;background:var(--bg);color:var(--ink);font:16px/1.5 Figtree,system-ui,sans-serif}
+.wrap{max-width:720px;margin:0 auto;padding:0 16px 40px}
+header.top{position:sticky;top:env(safe-area-inset-top,0px);z-index:5;background:var(--pitch);color:var(--onpitch)}
+body::before{content:"";position:fixed;inset:0 0 auto;height:env(safe-area-inset-top,0px);background:var(--pitch);z-index:10}
+.bar{max-width:720px;margin:0 auto;display:flex;align-items:center;justify-content:space-between;padding:10px 16px}
+.logo{font:800 28px/1 "Barlow Condensed",Impact,sans-serif;letter-spacing:.5px}
+.logo i{font-style:normal;color:var(--gold)}
+nav{display:flex;gap:4px}
+nav a{color:var(--onpitch);text-decoration:none;padding:8px 9px;border-radius:999px;font-weight:600;font-size:14px;opacity:.8}
+nav a[aria-current="page"]{background:var(--gold);color:#1a1a1a;opacity:1}
+nav a:focus-visible,button:focus-visible{outline:3px solid var(--gold);outline-offset:2px}
+.hero{background:repeating-linear-gradient(90deg,var(--pitch) 0 64px,var(--pitch2) 64px 128px);color:var(--onpitch);padding:28px 0 26px}
+.hero .wrap{padding-bottom:0}
+.hero h1{font:800 clamp(36px,9vw,56px)/.98 "Barlow Condensed",Impact,sans-serif;margin:0 0 10px}
+.hero p{margin:0 0 16px;max-width:46ch;opacity:.92}
+.btn{display:inline-block;border:0;border-radius:10px;padding:13px 18px;font:600 16px Figtree,sans-serif;background:var(--gold);color:#1a1a1a;cursor:pointer;text-decoration:none}
+.btn.ghost{background:transparent;color:inherit;border:2px solid currentColor}
+.note{font-size:13px;color:var(--mute)}
+.hero .note{color:var(--onpitch);opacity:.8}
+.stats{display:flex;gap:10px;margin:16px 0}
+.stat{flex:1;background:var(--card);border:1px solid var(--line);border-radius:10px;padding:10px 12px}
+.stat b{display:block;font:800 30px/1 "Barlow Condensed",sans-serif}
+.stat span{font-size:13px;color:var(--mute)}
+h2{font:800 26px/1.1 "Barlow Condensed",Impact,sans-serif;margin:22px 0 10px}
+.match{background:var(--card);border:1px solid var(--line);border-radius:12px;padding:14px;margin-bottom:12px}
+.meta{display:flex;justify-content:space-between;font-size:13px;color:var(--mute);margin-bottom:6px}
+.teams{font:600 18px/1.25 Figtree,sans-serif;margin-bottom:10px}
+.teams em{font-style:normal;color:var(--mute);font-weight:400;padding:0 6px}
+.tip{display:flex;align-items:center;gap:12px}
+.pick{background:var(--pitch);color:var(--onpitch);border-radius:8px;padding:6px 12px;font:800 20px "Barlow Condensed",sans-serif}
+.conf{flex:1}
+.conf small{display:flex;justify-content:space-between;color:var(--mute);font-size:13px}
+.track{height:8px;border-radius:99px;background:var(--line);overflow:hidden;margin-top:3px}
+.fill{height:100%;background:var(--gold)}
+.probs{font-size:13px;color:var(--mute);margin-top:8px}
+.lock{position:relative}
+.lock .blur{filter:blur(7px);pointer-events:none;user-select:none}
+.lock .over{position:absolute;inset:0;display:flex;align-items:center;justify-content:center}
+table{width:100%;border-collapse:collapse;background:var(--card);border:1px solid var(--line);border-radius:12px;overflow:hidden;font-size:14px}
+th,td{padding:10px;text-align:left;border-bottom:1px solid var(--line)}
+th{color:var(--mute);font-weight:600}
+.w{color:var(--win);font-weight:600}.l{color:var(--lose);font-weight:600}.p{color:var(--mute)}
+.scroll{overflow-x:auto}
+.plan{background:var(--card);border:2px solid var(--gold);border-radius:14px;padding:18px}
+.plan .price{font:800 44px/1 "Barlow Condensed",sans-serif}
+.plan ul{padding-left:20px;margin:12px 0}
+.warn{border-left:4px solid var(--gold);background:var(--card);padding:10px 12px;border-radius:0 8px 8px 0;font-size:14px;margin:14px 0}
+footer{color:var(--mute);font-size:13px;padding-top:20px;border-top:1px solid var(--line);margin-top:26px}
+#toast{position:fixed;left:16px;right:16px;bottom:calc(16px + env(safe-area-inset-bottom,0px));max-width:560px;margin:0 auto;background:var(--ink);color:var(--bg);padding:12px 14px;border-radius:10px;display:none;z-index:20}
+</style>
+</head>
+<body>
+<header class="top"><div class="bar">
+  <div class="logo">WIN<i>-</i>WIN</div>
+  <nav aria-label="Navigation"><a href="#pronos">Pronos</a><a href="#direct">Direct</a><a href="#historique">Résultats</a><a href="#premium">Premium</a></nav>
+</div></header>
+
+<main id="app"></main>
+
+<div id="toast" role="status"></div>
+
+<script>
+/* ===== 1. DONNÉES (exemples : à remplacer par votre API) =====
+   Équipes fictives. form = points sur les 5 derniers matchs (0 à 15),
+   gf/ga = buts marqués/encaissés par match. */
+const MATCHS = [
+  {id:1, ligue:"Exemple · Ligue du Bénin", heure:"16:00", dom:{n:"Panthères de Cotonou", form:11, gf:1.9, ga:0.8}, ext:{n:"Aigles de Porto-Novo", form:6, gf:1.1, ga:1.4}},
+  {id:2, ligue:"Exemple · Ligue du Bénin", heure:"18:00", dom:{n:"Requins de Ouidah", form:7, gf:1.2, ga:1.2}, ext:{n:"Buffles de Parakou", form:8, gf:1.3, ga:1.1}},
+  {id:3, ligue:"Exemple · Coupe", heure:"19:30", dom:{n:"Lions de l’Ouémé", form:4, gf:0.9, ga:1.7}, ext:{n:"Étoiles du Mono", form:12, gf:2.0, ga:0.7}},
+  {id:4, ligue:"Exemple · Coupe", heure:"21:00", dom:{n:"Cobras d’Abomey", form:9, gf:1.5, ga:1.0}, ext:{n:"Zèbres de Natitingou", form:5, gf:0.8, ga:1.5}}
+];
+const GRATUITS = 2; // nombre de pronos visibles sans abonnement
+
+/* Historique d’exemple. Remplacez-le par vos vrais pronostics enregistrés. */
+const HISTORIQUE = [
+  {d:"Exemple 1", m:"Équipe A – Équipe B", p:"1", r:"w"},
+  {d:"Exemple 2", m:"Équipe C – Équipe D", p:"2", r:"l"},
+  {d:"Exemple 3", m:"Équipe E – Équipe F", p:"N", r:"w"},
+  {d:"Exemple 4", m:"Équipe G – Équipe H", p:"1", r:"w"},
+  {d:"Exemple 5", m:"Équipe I – Équipe J", p:"1", r:"l"},
+  {d:"Exemple 6", m:"Équipe K – Équipe L", p:"2", r:"x"}
+];
+
+/* ===== 2. CALCUL DU PRONOSTIC (recalculé depuis les données) ===== */
+function force(t, domicile){
+  const forme = t.form/15;
+  const diff = Math.max(-1, Math.min(1, (t.gf - t.ga)/2));
+  return forme*0.6 + diff*0.4 + (domicile ? 0.1 : 0);
+}
+function pronostic(m){
+  const d = force(m.dom, true) - force(m.ext, false);
+  const pN = Math.max(0.15, 0.30 - 0.15*Math.abs(d));
+  const pD = (1-pN) / (1 + Math.exp(-3*d));
+  const pE = 1 - pN - pD;
+  const opts = [["1",pD,"Victoire "+m.dom.n],["N",pN,"Match nul"],["2",pE,"Victoire "+m.ext.n]];
+  opts.sort((a,b)=>b[1]-a[1]);
+  return {pick:opts[0][0], label:opts[0][2], conf:Math.round(opts[0][1]*100),
+          pD:Math.round(pD*100), pN:Math.round(pN*100), pE:Math.round(pE*100)};
+}
+
+/* ===== 3. VUES ===== */
+const esc = s => String(s).replace(/[&<>"]/g, c => ({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;"}[c]));
+const AVERT = '<div class="warn"><b>Jeu responsable.</b> Un pronostic est une estimation, jamais une garantie de gain. Réservé aux adultes (18 ans et plus). Ne misez que ce que vous pouvez perdre.</div>';
+
+function carte(m, i){
+  const p = pronostic(m);
+  const corps = `
+    <div class="meta"><span>${esc(m.ligue)}</span><span>${esc(m.heure)}</span></div>
+    <div class="teams">${esc(m.dom.n)}<em>contre</em>${esc(m.ext.n)}</div>
+    <div class="tip"><div class="pick">${p.pick}</div>
+      <div class="conf"><small><span>${esc(p.label)}</span><span>Confiance ${p.conf}%</span></small>
+      <div class="track"><div class="fill" style="width:${p.conf}%"></div></div></div></div>
+    <div class="probs">Domicile ${p.pD}% · Nul ${p.pN}% · Extérieur ${p.pE}%</div>`;
+  if(i < GRATUITS) return `<article class="match">${corps}</article>`;
+  return `<article class="match lock"><div class="blur">${corps}</div>
+    <div class="over"><a class="btn" href="#premium">Débloquer avec Premium</a></div></article>`;
+}
+
+function taux(){
+  const finis = HISTORIQUE.filter(h => h.r !== "x");
+  const gagnes = finis.filter(h => h.r === "w").length;
+  return {total:HISTORIQUE.length, finis:finis.length, pct: finis.length ? Math.round(gagnes/finis.length*100) : null};
+}
+
+function vuePronos(){
+  const t = taux();
+  return `
+  <section class="hero"><div class="wrap">
+    <h1>Les pronos foot du jour,<br>résultats à l’appui.</h1>
+    <p>Chaque pronostic est calculé à partir de la forme, des buts et du terrain. Chaque résultat est publié, gagné ou perdu.</p>
+    <a class="btn" href="#premium">Voir l’offre Premium</a>
+    <p class="note" style="margin-top:12px">Version de démonstration : équipes et chiffres fictifs.</p>
+  </div></section>
+  <div class="wrap">
+    <div class="stats">
+      <div class="stat"><b>${t.total}</b><span>pronos publiés</span></div>
+      <div class="stat"><b>${t.pct === null ? "–" : t.pct + "%"}</b><span>réussis sur ${t.finis} terminés</span></div>
+    </div>
+    <h2>Matchs du jour</h2>
+    ${MATCHS.map(carte).join("")}
+    ${AVERT}
+  </div>`;
+}
+
+function vueHistorique(){
+  const t = taux();
+  const lib = {w:'<span class="w">Gagné</span>', l:'<span class="l">Perdu</span>', x:'<span class="p">En attente</span>'};
+  return `<div class="wrap">
+    <h2>Résultats publiés</h2>
+    <div class="stats">
+      <div class="stat"><b>${t.pct === null ? "–" : t.pct + "%"}</b><span>taux de réussite</span></div>
+      <div class="stat"><b>${t.finis}</b><span>pronos terminés</span></div>
+    </div>
+    <div class="scroll"><table>
+      <thead><tr><th>Date</th><th>Match</th><th>Prono</th><th>Résultat</th></tr></thead>
+      <tbody>${HISTORIQUE.map(h => `<tr><td>${esc(h.d)}</td><td>${esc(h.m)}</td><td>${esc(h.p)}</td><td>${lib[h.r]}</td></tr>`).join("")}</tbody>
+    </table></div>
+    <p class="note">Ces lignes sont des exemples. Ce taux se calcule seul à partir de votre historique réel. Ne le modifiez jamais à la main.</p>
+    ${AVERT}
+  </div>`;
+}
+
+function vuePremium(){
+  return `<div class="wrap">
+    <h2>Premium</h2>
+    <div class="plan">
+      <div class="price">À fixer <span style="font-size:18px;font-weight:400">FCFA / mois</span></div>
+      <ul>
+        <li>Tous les pronostics du jour, sans flou</li>
+        <li>Le détail des probabilités pour chaque match</li>
+        <li>Annulation possible à tout moment</li>
+      </ul>
+      <button class="btn" id="pay">Payer avec Mobile Money</button>
+      <p class="note">Le paiement n’est pas encore branché : voir les étapes dans le chat.</p>
+    </div>
+    ${AVERT}
+  </div>`;
+}
+
+let minuteur = null;
+function vueDirect(){
+  return `<div class="wrap"><h2>Matchs en direct</h2>
+  <div id="live"><p class="note">Chargement…</p></div>
+  <p class="note">Mise à jour automatique. Les scores peuvent avoir quelques minutes de retard.</p>${AVERT}</div>`;
+}
+async function chargerDirect(){
+  const box = document.getElementById("live");
+  if(!box) return;
+  try{
+    const r = await fetch("/api/live");
+    const d = await r.json();
+    if(!r.ok || d.error) throw new Error(d.error || ("Erreur " + r.status));
+    box.innerHTML = d.matches.length ? d.matches.map(m => `<article class="match">
+      <div class="meta"><span>${esc(m.ligue)}</span><span class="w">${m.minute ? esc(m.minute) + "’" : esc(m.statut)}</span></div>
+      <div class="teams">${esc(m.dom)} <b>${m.sd ?? 0}</b> – <b>${m.se ?? 0}</b> ${esc(m.ext)}</div></article>`).join("")
+      : '<p class="note">Aucun match en cours pour le moment.</p>';
+  }catch(e){
+    box.innerHTML = '<div class="warn"><b>Direct indisponible.</b> ' + esc(e.message) + ' Vérifiez que la fonction /api/live est bien déployée avec votre clé API.</div>';
+  }
+}
+const VUES = {pronos:vuePronos, direct:vueDirect, historique:vueHistorique, premium:vuePremium};
+
+function toast(msg){
+  const t = document.getElementById("toast");
+  t.textContent = msg; t.style.display = "block";
+  setTimeout(() => t.style.display = "none", 4500);
+}
+
+function rendre(){
+  let nom = (location.hash || "#pronos").slice(1);
+  if(!VUES[nom]) nom = "pronos";
+  document.getElementById("app").innerHTML = VUES[nom]();
+  document.querySelectorAll("nav a").forEach(a => {
+    if(a.getAttribute("href") === "#" + nom) a.setAttribute("aria-current","page"); else a.removeAttribute("aria-current");
+  });
+  const pay = document.getElementById("pay");
+  if(pay) pay.onclick = () => toast("Paiement non connecté. Il faudra relier MTN MoMo ou Moov Money via un service de paiement.");
+  clearInterval(minuteur);
+  if(nom === "direct"){ chargerDirect(); minuteur = setInterval(chargerDirect, 60000); }
+  window.scrollTo(0,0);
+}
+window.addEventListener("hashchange", rendre);
+rendre();
+</script>
+</body>
+</html>
